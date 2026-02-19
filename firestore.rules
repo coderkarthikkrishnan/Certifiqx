@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ─────────────────────────────────────────────────
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasRole(role) {
+      return isAuth() && getUserData().role == role;
+    }
+
+    function hasAnyRole(roles) {
+      return isAuth() && getUserData().role in roles;
+    }
+
+    function sameOrg(orgId) {
+      return isAuth() && getUserData().orgId == orgId;
+    }
+
+    // ── Users ────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read:  if request.auth.uid == uid || hasRole('superadmin');
+      allow create: if request.auth.uid == uid;
+      allow update: if request.auth.uid == uid || hasRole('superadmin');
+      allow delete: if hasRole('superadmin');
+    }
+
+    // ── Organizations ────────────────────────────────────────────────────
+    match /organizations/{orgId} {
+      // Any authenticated user can read (needed for dashboard lookups)
+      allow read:   if isAuth();
+      // Only principal of that org or superadmin can write
+      allow create: if hasAnyRole(['principal', 'superadmin']);
+      allow update: if (hasRole('principal') && sameOrg(orgId)) || hasRole('superadmin');
+      allow delete: if hasRole('superadmin');
+    }
+
+    // ── Certificates ─────────────────────────────────────────────────────
+    match /certificates/{certId} {
+      // Public read for verification pages (no auth required)
+      allow read: if true;
+      // Write only via Netlify Functions (Firebase Admin SDK bypasses rules)
+      // Frontend direct write is blocked for non-admins
+      allow create: if false; // Only via Admin SDK in Netlify functions
+      allow update: if hasAnyRole(['principal', 'superadmin']); // Revocation
+      allow delete: if hasRole('superadmin');
+    }
+
+    // ── Subscriptions ─────────────────────────────────────────────────────
+    match /subscriptions/{orgId} {
+      allow read:   if sameOrg(orgId) || hasRole('superadmin');
+      allow write:  if hasRole('superadmin'); // Only via Admin SDK (webhook) or superadmin
+    }
+
+    // ── Departments ───────────────────────────────────────────────────────
+    match /departments/{deptId} {
+      allow read:   if isAuth();
+      allow create: if hasAnyRole(['principal', 'superadmin']);
+      allow update: if hasAnyRole(['principal', 'hod', 'superadmin']);
+      allow delete: if hasAnyRole(['principal', 'superadmin']);
+    }
+  }
+}

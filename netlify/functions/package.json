@@ -1,0 +1,18 @@
+{
+  "name": "certifypro-functions",
+  "version": "1.0.0",
+  "description": "CertifyPro Netlify serverless functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "pdfkit": "^0.14.0",
+    "qrcode": "^1.5.3",
+    "cloudinary": "^2.3.1",
+    "razorpay": "^2.9.2",
+    "uuid": "^9.0.1",
+    "papaparse": "^5.4.1",
+    "axios": "^1.6.8"
+  }
+}

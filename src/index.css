@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #f8f9fb;
+    color: #1e1e2e;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.15;
+  }
+}
+
+@layer utilities {
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, #6366f1 0%, #d946ef 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Gradient pill highlight */
+  .gradient-pill {
+    background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(217,70,239,0.15) 100%);
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 9999px;
+    padding: 0.1em 0.5em;
+  }
+
+  /* Glass card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 32px 0 rgba(30, 30, 60, 0.08);
+  }
+
+  /* Soft card */
+  .soft-card {
+    background: #ffffff;
+    border: 1px solid #e8eaf0;
+    box-shadow: 0 2px 24px 0 rgba(99, 102, 241, 0.07);
+  }
+
+  /* Gradient border card */
+  .gradient-border {
+    position: relative;
+    background: #fff;
+    border-radius: 1.5rem;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 1.6rem;
+    background: linear-gradient(135deg, #6366f1 0%, #d946ef 100%);
+    z-index: -1;
+  }
+
+  /* Button glow on hover */
+  .btn-glow:hover {
+    box-shadow: 0 0 24px 0 rgba(99, 102, 241, 0.4);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 9999px;
+  }
+}
