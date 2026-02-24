@@ -48,7 +48,7 @@ export function RoleBasedRoute({ roles, children }) {
 // ── Tiny inline loading screen ─────────────────────────────────────────────
 function LoadingScreen() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#f0f4ff]">
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--c-bg)' }}>
             <div className="bouncing-loader">
                 <div></div>
                 <div></div>

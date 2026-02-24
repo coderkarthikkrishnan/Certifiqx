@@ -23,7 +23,7 @@ export default function VerifyPage() {
 
     if (loading) {
         return (
-            <div className="verify-page__loading flex-col">
+            <div className="verify-page__loading">
                 <div className="bouncing-loader">
                     <div></div>
                     <div></div>
