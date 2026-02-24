@@ -61,34 +61,35 @@ async function sendEmail({ to_name, to_email, org_name, job_title, cert_id, pdf_
                     <!-- HERO -->
                     <tr>
                         <td class="hero-cell" align="center"
-                            style="background:linear-gradient(135deg,#3b5bdb,#4263eb);background-color:#3b5bdb;padding:50px 40px 30px 40px;border-radius:16px 16px 0 0;">
+                            style="background:linear-gradient(135deg,#3b5bdb,#4263eb);background-color:#3b5bdb;padding:50px 0 30px 0;border-radius:16px 16px 0 0;overflow:visible;position:relative;">
 
-                            <!-- Illustrations: megaphone | 🎓 | rocket -->
+                            <!-- Illustrations: megaphone (left bleed) | rocket (right bleed) -->
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td align="left" valign="bottom" width="33%">
+                                    <!-- Megaphone: bleeds off left edge -->
+                                    <td align="left" valign="bottom" width="25%" style="padding:0;overflow:visible;">
                                         <img class="illo-img"
                                             src="https://cdn.jsdelivr.net/gh/coderkarthikkrishnan/Certifiqx@main/public/images/megaphone.png"
-                                            alt="Megaphone" width="110"
-                                            style="display:block;border:0;outline:none;text-decoration:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.3));">
+                                            alt="" width="130"
+                                            style="display:block;border:0;outline:none;text-decoration:none;margin-left:-20px;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.3));">
                                     </td>
-                                    <td align="center" valign="middle" width="34%">
-                                        <p style="margin:0;font-size:52px;line-height:1;">🎓</p>
-                                    </td>
-                                    <td align="right" valign="bottom" width="33%">
+                                    <!-- Spacer centre -->
+                                    <td width="50%"></td>
+                                    <!-- Rocket: bleeds off right edge, flipped to face left -->
+                                    <td align="right" valign="bottom" width="25%" style="padding:0;overflow:visible;">
                                         <img class="illo-img"
                                             src="https://cdn.jsdelivr.net/gh/coderkarthikkrishnan/Certifiqx@main/public/images/rocket.png"
-                                            alt="Rocket" width="130"
-                                            style="display:block;margin-left:auto;border:0;outline:none;text-decoration:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.3));">
+                                            alt="" width="145"
+                                            style="display:block;border:0;outline:none;text-decoration:none;margin-right:-20px;transform:scaleX(-1);filter:drop-shadow(0 8px 18px rgba(0,0,0,0.3));">
                                     </td>
                                 </tr>
                             </table>
 
                             <h1 class="hero-title"
-                                style="margin:12px 0 0 0;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:32px;font-weight:700;color:#ffffff;text-align:center;letter-spacing:-0.5px;">
+                                style="margin:16px 40px 0 40px;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:32px;font-weight:700;color:#ffffff;text-align:center;letter-spacing:-0.5px;">
                                 Certificate of Completion
                             </h1>
-                            <p style="margin:10px 0 0 0;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:16px;color:rgba(255,255,255,0.9);text-align:center;line-height:1.5;">
+                            <p style="margin:10px 40px 0 40px;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:16px;color:rgba(255,255,255,0.9);text-align:center;line-height:1.5;">
                                 Issued by <strong style="color:#ffffff;">${org_name}</strong>
                             </p>
                         </td>
