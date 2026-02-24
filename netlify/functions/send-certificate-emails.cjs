@@ -68,7 +68,7 @@ async function sendEmail({ to_name, to_email, org_name, job_title, cert_id, pdf_
                                 <tr>
                                     <td align="left" valign="bottom" width="33%">
                                         <img class="illo-img"
-                                            src="https://certifiqx.app/images/megaphone.png"
+                                            src="https://cdn.jsdelivr.net/gh/coderkarthikkrishnan/Certifiqx@main/public/images/megaphone.png"
                                             alt="Megaphone" width="110"
                                             style="display:block;border:0;outline:none;text-decoration:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.3));">
                                     </td>
@@ -77,7 +77,7 @@ async function sendEmail({ to_name, to_email, org_name, job_title, cert_id, pdf_
                                     </td>
                                     <td align="right" valign="bottom" width="33%">
                                         <img class="illo-img"
-                                            src="https://certifiqx.app/images/rocket.png"
+                                            src="https://cdn.jsdelivr.net/gh/coderkarthikkrishnan/Certifiqx@main/public/images/rocket.png"
                                             alt="Rocket" width="130"
                                             style="display:block;margin-left:auto;border:0;outline:none;text-decoration:none;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.3));">
                                     </td>
