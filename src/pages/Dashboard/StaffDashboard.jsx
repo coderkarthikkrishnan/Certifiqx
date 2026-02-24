@@ -98,7 +98,7 @@ export default function StaffDashboard() {
             <div className="role-dash__list-card">
                 <div className="role-dash__list-header"><span className="role-dash__list-title">Recent Certificates</span></div>
                 {loading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}><div className="spinner" /></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
                 ) : (
                     <>
                         {certs.slice(0, 6).map(c => (

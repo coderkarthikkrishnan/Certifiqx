@@ -100,7 +100,7 @@ export default function HODStaff() {
                 </div>
 
                 {loading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
                 ) : (
                     <>
                         {filteredList.map(member => (
@@ -162,7 +162,7 @@ export default function HODStaff() {
                                 <div style={{ display: 'flex', gap: 10 }}>
                                     <button type="button" onClick={() => setIsInviteModalOpen(false)} className="btn btn--ghost" style={{ flex: 1 }}>Cancel</button>
                                     <button type="submit" disabled={inviting} className="btn btn--brand" style={{ flex: 1 }}>
-                                        {inviting ? <><div className="spinner" /> Inviting…</> : 'Send Invite'}
+                                        {inviting ? <><div className="bouncing-loader"><div></div><div></div><div></div></div> Inviting…</> : 'Send Invite'}
                                     </button>
                                 </div>
                             </form>

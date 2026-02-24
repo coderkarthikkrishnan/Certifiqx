@@ -60,7 +60,7 @@ export default function SuperAdminRevoke() {
                 </div>
 
                 {loading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
                 ) : filteredCerts.length === 0 ? (
                     <div className="db-empty"><p className="db-empty__sub">No matching certificates found.</p></div>
                 ) : (

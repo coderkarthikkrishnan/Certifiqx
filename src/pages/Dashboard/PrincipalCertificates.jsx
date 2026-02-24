@@ -90,7 +90,7 @@ export default function PrincipalCertificates() {
                 )}
 
                 {loading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
                 ) : filteredCerts.length === 0 ? (
                     <div className="db-empty"><FileText /><div className="db-empty__title">No certificates found</div><p className="db-empty__sub">No certificates match your search.</p></div>
                 ) : (

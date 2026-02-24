@@ -121,7 +121,7 @@ export default function HODDashboard() {
                 <div className="hod-dash__recent-header">Department Certificates</div>
                 {loading ? (
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '32px 0' }}>
-                        <div className="spinner" />
+                        <div className="bouncing-loader"><div></div><div></div><div></div></div>
                     </div>
                 ) : (
                     <>

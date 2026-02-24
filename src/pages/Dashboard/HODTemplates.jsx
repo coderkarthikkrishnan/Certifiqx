@@ -61,7 +61,7 @@ export default function HODTemplates() {
             </div>
 
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
             ) : templates.length === 0 ? (
                 <div className="db-empty">
                     <LayoutTemplate />

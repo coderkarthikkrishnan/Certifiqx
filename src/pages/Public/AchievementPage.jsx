@@ -27,8 +27,12 @@ export default function AchievementPage() {
 
     if (loading) {
         return (
-            <div className="flex-center" style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
-                <div className="spinner" />
+            <div className="flex-center flex-col" style={{ minHeight: '100vh', background: 'var(--c-bg)' }}>
+                <div className="bouncing-loader">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
         )
     }

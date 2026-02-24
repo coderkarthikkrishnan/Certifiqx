@@ -267,7 +267,7 @@ export default function TemplateBuilder() {
                         <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
                     </button>
                     <button onClick={handleSave} disabled={saving} className="btn btn--brand btn--sm">
-                        {saving ? <div className="spinner spinner--sm" /> : <Save style={{ width: 14, height: 14 }} />} Save Template
+                        {saving ? <div className="bouncing-loader" style={{ padding: '0 8px' }}><div></div><div></div><div></div></div> : <Save style={{ width: 14, height: 14 }} />} Save Template
                     </button>
                 </div>
             </div>

@@ -93,7 +93,7 @@ export default function SuperAdminDashboard() {
             {/* Org cards */}
             <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--c-text-secondary)', marginBottom: 14 }}>All Organizations</div>
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
             ) : (
                 <div className="role-dash__org-grid">
                     {orgs.map((org, i) => {

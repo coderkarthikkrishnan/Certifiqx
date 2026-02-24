@@ -49,8 +49,10 @@ export function RoleBasedRoute({ roles, children }) {
 function LoadingScreen() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#f0f4ff]">
-            <div className="flex flex-col items-center gap-4">
-                <div className="spinner" style={{ width: 48, height: 48, borderWidth: 3, borderTopColor: '#6366f1' }} />
+            <div className="bouncing-loader">
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
         </div>
     )

@@ -83,7 +83,7 @@ export default function PrincipalDepartments() {
                 </div>
 
                 {loading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="bouncing-loader"><div></div><div></div><div></div></div></div>
                 ) : filteredDepts.length === 0 ? (
                     <div className="db-empty"><Building2 /><p className="db-empty__sub">No departments found.</p></div>
                 ) : (

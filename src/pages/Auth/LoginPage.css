@@ -132,9 +132,8 @@
     height: 18px;
 }
 
-.auth-google-btn .spinner {
-    width: 16px;
-    height: 16px;
+.auth-google-btn .bouncing-loader>div {
+    background-color: var(--c-text-secondary);
 }
 
 /* Divider */

@@ -23,8 +23,12 @@ export default function VerifyPage() {
 
     if (loading) {
         return (
-            <div className="verify-page__loading">
-                <div className="spinner" style={{ width: 40, height: 40, borderWidth: 3 }} />
+            <div className="verify-page__loading flex-col">
+                <div className="bouncing-loader">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
         )
     }
