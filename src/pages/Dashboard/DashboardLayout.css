@@ -749,3 +749,30 @@
     font-size: 13px;
     color: var(--c-text-muted);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .db-charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .db-search-input {
+        width: 100%;
+    }
+
+    .db-search-input:focus {
+        width: 100%;
+    }
+
+    .db-page-title {
+        font-size: 20px;
+    }
+
+    .db-kpi-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .db-table-wrap {
+        overflow-x: auto;
+    }
+}

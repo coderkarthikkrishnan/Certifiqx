@@ -273,3 +273,27 @@
     color: var(--c-brand);
     background: var(--c-brand-light);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .verify-page {
+        padding: 16px;
+    }
+
+    .verify-body,
+    .verify-notfound {
+        padding: 20px;
+    }
+
+    .verify-banner {
+        padding: 16px 20px;
+    }
+
+    .verify-actions {
+        flex-direction: column;
+    }
+
+    .verify-recipient__name {
+        font-size: 22px;
+    }
+}

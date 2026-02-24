@@ -149,3 +149,19 @@
 .tpl-status--rejected {
     color: var(--c-danger);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .tpl-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
+    .tpl-card__body {
+        padding: 12px;
+    }
+
+    .tpl-card__name {
+        font-size: 14px;
+    }
+}

@@ -298,3 +298,18 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .auth-page {
+        padding: var(--sp-2);
+    }
+
+    .auth-card {
+        padding: var(--sp-5);
+    }
+
+    .auth-card__title {
+        font-size: 20px;
+    }
+}
