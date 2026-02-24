@@ -50,8 +50,7 @@ function LoadingScreen() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#f0f4ff]">
             <div className="flex flex-col items-center gap-4">
-                <div className="w-10 h-10 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-                <p className="text-sm text-gray-400 font-medium">Loading…</p>
+                <div className="spinner" style={{ width: 48, height: 48, borderWidth: 3, borderTopColor: '#6366f1' }} />
             </div>
         </div>
     )

@@ -165,7 +165,7 @@ export default function StaffGenerate() {
                     )}
 
                     <button onClick={handleGenerate} disabled={generating || !csvRows.length || !jobTitle.trim()} className="auth-submit" style={{ marginTop: 20 }}>
-                        {generating ? <><div className="spinner" /> Generating {csvRows.length} certificates…</> : <><Upload style={{ width: 16, height: 16 }} /> Generate {csvRows.length || ''} Certificates</>}
+                        {generating ? <div className="spinner" style={{ width: 20, height: 20, borderTopColor: '#fff', borderColor: 'rgba(255,255,255,0.3)' }} /> : <><Upload style={{ width: 16, height: 16 }} /> Generate {csvRows.length || ''} Certificates</>}
                     </button>
                 </motion.div>
 
