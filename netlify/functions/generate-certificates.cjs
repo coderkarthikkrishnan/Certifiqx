@@ -290,8 +290,10 @@ exports.handler = async (event) => {
         let decoded
         try {
             decoded = await admin.auth().verifyIdToken(token)
-        } catch {
-            return { statusCode: 401, body: JSON.stringify({ error: 'Invalid token' }) }
+            console.log("Successfully verified token for UID:", decoded.uid)
+        } catch (e) {
+            console.error("Token verification failed:", e)
+            return { statusCode: 401, body: JSON.stringify({ error: 'Invalid token', details: e.message }) }
         }
 
         // Role check
@@ -306,8 +308,10 @@ exports.handler = async (event) => {
         }
 
         // Fetch Template
+        console.log(`Fetching template ${templateId}`)
         const templateDoc = await db.collection('templates').doc(templateId).get()
         if (!templateDoc.exists) {
+            console.error('Template not found:', templateId)
             return { statusCode: 404, body: JSON.stringify({ error: 'Template not found' }) }
         }
         const templateData = templateDoc.data()
@@ -407,6 +411,7 @@ exports.handler = async (event) => {
             }
         }
 
+        console.log(`Successfully generated ${success} certs, failed ${failed}`)
         return {
             statusCode: 200,
             body: JSON.stringify({ success, failed }),
@@ -415,7 +420,7 @@ exports.handler = async (event) => {
         console.error('Master handler error:', error)
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: error.message || 'Internal Server Error' })
+            body: JSON.stringify({ error: error.message || 'Internal Server Error', stack: error.stack })
         }
     }
 }
