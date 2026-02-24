@@ -1,0 +1,137 @@
+import { useState, useEffect } from 'react'
+import DashboardLayout from './DashboardLayout'
+import { getCertificatesByOrg, revokeCertificate, deleteCertificate, getDepartmentsByOrg } from '../../firebase/firestore'
+import { useAuth } from '../../contexts/AuthContext'
+import { Search, ShieldAlert, Award, AlertCircle, Download, FileText, Trash2, Ban } from 'lucide-react'
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
+import toast from 'react-hot-toast'
+
+const rowBtn = { width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: 'var(--c-text-faint)', transition: 'background 0.15s, color 0.15s', cursor: 'pointer', border: 'none' }
+
+export default function PrincipalCertificates() {
+    const { orgId } = useAuth()
+    const [certificates, setCertificates] = useState([])
+    const [selectedCerts, setSelectedCerts] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [searchTerm, setSearchTerm] = useState('')
+
+    useEffect(() => { if (!orgId) return; loadData() }, [orgId])
+
+    const loadData = async () => {
+        setLoading(true)
+        try {
+            const [certSnap, deptSnap] = await Promise.all([getCertificatesByOrg(orgId), getDepartmentsByOrg(orgId)])
+            const deptNameMap = {}; deptSnap.docs.forEach(d => { deptNameMap[d.id] = d.data().name })
+            setCertificates(certSnap.docs.map(d => { const data = d.data(); return { id: d.id, ...data, dept: deptNameMap[data.departmentId] || deptNameMap[data.dept] || data.dept || 'General' } }))
+        } catch (err) { console.error(err); toast.error('Failed to load certificates') }
+        finally { setLoading(false) }
+    }
+
+    const handleRevoke = async (certId) => { if (!window.confirm('Revoke this certificate?')) return; try { await revokeCertificate(certId); setCertificates(prev => prev.map(c => c.id === certId ? { ...c, status: 'revoked' } : c)); toast.success('Certificate revoked') } catch (err) { console.error(err); toast.error('Failed to revoke') } }
+    const handleDelete = async (certId) => { if (!window.confirm('Permanently delete this certificate?')) return; try { await deleteCertificate(certId); setCertificates(prev => prev.filter(c => c.id !== certId)); toast.success('Certificate deleted') } catch (err) { console.error(err); toast.error('Failed to delete') } }
+
+    const filteredCerts = certificates.filter(c =>
+        (c.recipientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.recipientEmail || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.certificateId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.dept || '').toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    const handleSelectAll = (e) => e.target.checked ? setSelectedCerts(filteredCerts.map(c => c.id)) : setSelectedCerts([])
+    const handleSelect = (certId) => setSelectedCerts(prev => prev.includes(certId) ? prev.filter(id => id !== certId) : [...prev, certId])
+
+    const handleBulkRevoke = async () => {
+        if (!window.confirm(`Revoke ${selectedCerts.length} certificates?`)) return
+        try { await Promise.all(selectedCerts.map(id => revokeCertificate(id))); setCertificates(prev => prev.map(c => selectedCerts.includes(c.id) ? { ...c, status: 'revoked' } : c)); setSelectedCerts([]); toast.success('Revoked') } catch { toast.error('Failed') }
+    }
+    const handleBulkDelete = async () => {
+        if (!window.confirm(`Delete ${selectedCerts.length} certificates?`)) return
+        try { await Promise.all(selectedCerts.map(id => deleteCertificate(id))); setCertificates(prev => prev.filter(c => !selectedCerts.includes(c.id))); setSelectedCerts([]); toast.success('Deleted') } catch { toast.error('Failed') }
+    }
+    const handleBulkDownload = async () => {
+        const ctsToDownload = certificates.filter(c => selectedCerts.includes(c.id) && c.pdfUrl)
+        if (!ctsToDownload.length) return toast.error('No PDFs available for selection')
+        const doDownload = async () => {
+            const zip = new JSZip(); const folder = zip.folder('Organization_Certificates')
+            for (const cert of ctsToDownload) { try { folder.file(`${(cert.recipientName || 'User').replace(/[^a-zA-Z0-9]/g, '_')}-${(cert.issuedAt?.toDate?.() || new Date()).toISOString().split('T')[0]}.pdf`, await (await fetch(cert.pdfUrl)).blob()) } catch { } }
+            saveAs(await zip.generateAsync({ type: 'blob' }), 'Organization_Certificates.zip')
+        }
+        toast.promise(doDownload(), { loading: 'Compressing…', success: 'Done!', error: 'Error' }); setSelectedCerts([])
+    }
+
+    return (
+        <DashboardLayout>
+            <div className="db-page-header">
+                <div>
+                    <h1 className="db-page-title">Certificates Library</h1>
+                    <p className="db-page-sub">View and manage all certificates generated by your organization</p>
+                </div>
+            </div>
+
+            <div className="db-table-wrap">
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--c-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                    <div className="db-search-wrap">
+                        <span className="db-search-icon"><Search /></span>
+                        <input type="text" placeholder="Search by name, email, ID, or dept..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="db-search-input" />
+                    </div>
+                    <span style={{ fontSize: 11, color: 'var(--c-text-faint)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{filteredCerts.length} total</span>
+                </div>
+
+                {selectedCerts.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '1px solid var(--c-brand-light)', background: 'var(--c-brand-light)', flexWrap: 'wrap', gap: 8 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-brand)' }}>{selectedCerts.length} selected</span>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <button onClick={handleBulkDownload} className="btn btn--ghost btn--xs"><Download style={{ width: 13, height: 13 }} /> Download</button>
+                            <button onClick={handleBulkRevoke} className="btn btn--ghost btn--xs" style={{ color: '#d97706' }}><Ban style={{ width: 13, height: 13 }} /> Revoke</button>
+                            <button onClick={handleBulkDelete} className="btn btn--ghost btn--xs" style={{ color: 'var(--c-danger)' }}><Trash2 style={{ width: 13, height: 13 }} /> Delete</button>
+                        </div>
+                    </div>
+                )}
+
+                {loading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+                ) : filteredCerts.length === 0 ? (
+                    <div className="db-empty"><FileText /><div className="db-empty__title">No certificates found</div><p className="db-empty__sub">No certificates match your search.</p></div>
+                ) : (
+                    <div style={{ overflowX: 'auto' }}>
+                        <table className="db-table">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: 48, textAlign: 'center' }}><input type="checkbox" checked={selectedCerts.length === filteredCerts.length && filteredCerts.length > 0} onChange={handleSelectAll} /></th>
+                                    <th>Recipient</th><th>Department</th><th>Certificate ID</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredCerts.map(cert => (
+                                    <tr key={cert.id} style={{ background: selectedCerts.includes(cert.id) ? 'var(--c-brand-light)' : undefined, opacity: cert.status === 'revoked' ? 0.7 : 1 }}>
+                                        <td style={{ textAlign: 'center' }}><input type="checkbox" checked={selectedCerts.includes(cert.id)} onChange={() => handleSelect(cert.id)} /></td>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--c-brand-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Award style={{ color: 'var(--c-brand)', width: 18, height: 18 }} /></div>
+                                                <div>
+                                                    <div style={{ fontWeight: 700, color: 'var(--c-text-primary)' }}>{cert.recipientName}</div>
+                                                    <div style={{ fontSize: 11, color: 'var(--c-text-muted)' }}>{cert.recipientEmail}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span className="badge badge--gray">{cert.dept || 'General'}</span></td>
+                                        <td><code style={{ fontSize: 10, fontFamily: 'monospace', color: 'var(--c-text-faint)' }}>{cert.certificateId}</code></td>
+                                        <td><span className={`badge badge--${cert.status === 'revoked' ? 'danger' : 'success'}`}>{cert.status === 'revoked' ? <><AlertCircle style={{ width: 11, height: 11 }} /> Revoked</> : 'Valid'}</span></td>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                                                {cert.pdfUrl && <a href={cert.pdfUrl} target="_blank" rel="noreferrer" style={{ ...rowBtn }} onMouseOver={e => { e.currentTarget.style.background = 'var(--c-brand-light)'; e.currentTarget.style.color = 'var(--c-brand)' }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--c-text-faint)' }} title="Download"><Download style={{ width: 14, height: 14 }} /></a>}
+                                                {cert.status !== 'revoked' && <button onClick={() => handleRevoke(cert.id)} style={{ ...rowBtn }} onMouseOver={e => { e.currentTarget.style.background = '#fff7ed'; e.currentTarget.style.color = '#d97706' }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--c-text-faint)' }} title="Revoke"><ShieldAlert style={{ width: 14, height: 14 }} /></button>}
+                                                <button onClick={() => handleDelete(cert.id)} style={{ ...rowBtn }} onMouseOver={e => { e.currentTarget.style.background = 'var(--c-danger-bg)'; e.currentTarget.style.color = 'var(--c-danger)' }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--c-text-faint)' }} title="Delete"><Trash2 style={{ width: 14, height: 14 }} /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        </DashboardLayout>
+    )
+}

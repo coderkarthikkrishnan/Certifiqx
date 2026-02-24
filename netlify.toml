@@ -3,15 +3,18 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[functions]
+  node_bundler = "esbuild"
+
+[functions."generate-certificates"]
+  node_bundler = "zisi"
+  included_files = ["node_modules/pdfkit/js/data/**"]
+
 [dev]
   command = "npm run dev"
   port = 8888
   targetPort = 5173
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  framework = "vite"
 
 [[headers]]
   for = "/.netlify/functions/*"
@@ -19,3 +22,8 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

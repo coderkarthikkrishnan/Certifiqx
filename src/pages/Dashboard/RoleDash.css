@@ -1,0 +1,224 @@
+/* Shared role dashboard CSS — imported by PrincipalDashboard, StaffDashboard, SuperAdminDashboard */
+
+/* Quick action card grid */
+.role-dash__qa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.role-dash__qa-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    text-decoration: none;
+    transition: transform var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast);
+    cursor: pointer;
+}
+
+.role-dash__qa-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--c-brand-muted);
+}
+
+.role-dash__qa-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    transition: transform var(--t-fast);
+}
+
+.role-dash__qa-card:hover .role-dash__qa-icon {
+    transform: scale(1.1);
+}
+
+.role-dash__qa-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.role-dash__qa-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--c-text-primary);
+    margin-bottom: 3px;
+}
+
+.role-dash__qa-sub {
+    font-size: 11px;
+    color: var(--c-text-muted);
+    line-height: 1.4;
+}
+
+/* Cert/org list card */
+.role-dash__list-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 20px;
+}
+
+.role-dash__list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--c-border);
+}
+
+.role-dash__list-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-text-secondary);
+}
+
+.role-dash__list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--c-divider);
+    transition: background var(--t-fast);
+}
+
+.role-dash__list-row:last-child {
+    border-bottom: none;
+}
+
+.role-dash__list-row:hover {
+    background: var(--c-bg);
+}
+
+.role-dash__row-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+}
+
+.role-dash__row-sub {
+    font-size: 11px;
+    color: var(--c-text-faint);
+    margin-top: 1px;
+}
+
+/* Org card grid */
+.role-dash__org-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.role-dash__org-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-xl);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+
+.role-dash__org-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.role-dash__org-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.role-dash__org-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.role-dash__org-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c-text-primary);
+}
+
+.role-dash__org-plan {
+    font-size: 11px;
+    color: var(--c-text-faint);
+    margin-top: 1px;
+}
+
+.role-dash__org-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--c-divider);
+}
+
+.role-dash__org-stat {
+    font-size: 12px;
+    color: var(--c-text-muted);
+    font-weight: 600;
+}
+
+.role-dash__org-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.role-dash__org-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-bg);
+    color: var(--c-text-muted);
+    transition: background var(--t-fast), color var(--t-fast);
+}
+
+.role-dash__org-btn:hover {
+    background: var(--c-brand-light);
+    color: var(--c-brand);
+}
+
+.role-dash__org-btn--danger:hover {
+    background: var(--c-danger-bg);
+    color: var(--c-danger);
+}
+
+.role-dash__org-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
+@media (max-width: 640px) {
+    .role-dash__qa-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

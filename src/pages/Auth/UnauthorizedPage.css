@@ -1,0 +1,103 @@
+/* UnauthorizedPage.css */
+.unauth-page {
+    min-height: 100vh;
+    background: #f0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-4);
+}
+
+.dark .unauth-page {
+    background: #0b1120;
+}
+
+.unauth-card {
+    background: var(--c-card);
+    border-radius: var(--r-2xl);
+    box-shadow: var(--shadow-xl);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid var(--c-border);
+}
+
+.unauth-card__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--r-xl);
+    background: var(--c-danger-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--sp-5);
+}
+
+.unauth-card__icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--c-danger);
+}
+
+.unauth-card__title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--c-text-primary);
+    margin-bottom: 8px;
+}
+
+.unauth-card__sub {
+    font-size: 13px;
+    color: var(--c-text-muted);
+    margin-bottom: 8px;
+}
+
+.unauth-card__role {
+    font-size: 12px;
+    color: var(--c-text-faint);
+    margin-bottom: var(--sp-7);
+}
+
+.unauth-card__role code {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--c-text-secondary);
+}
+
+.unauth-card__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.unauth-btn--outline {
+    padding: 10px 20px;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--c-border);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+    background: transparent;
+    transition: background var(--t-fast), border-color var(--t-fast);
+}
+
+.unauth-btn--outline:hover {
+    background: var(--c-bg);
+    border-color: #d1d5db;
+}
+
+.unauth-btn--fill {
+    padding: 10px 20px;
+    border-radius: var(--r-lg);
+    background: var(--c-btn-dark);
+    color: var(--c-btn-dark-text);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background var(--t-fast);
+}
+
+.unauth-btn--fill:hover {
+    background: var(--c-danger);
+}

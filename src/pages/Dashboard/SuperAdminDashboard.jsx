@@ -1,151 +1,130 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import DashboardLayout from './DashboardLayout'
-import { getAllOrganizations } from '../../firebase/firestore'
-import { Building2, Users, FileText, TrendingUp, ShieldOff, CheckCircle, XCircle } from 'lucide-react'
+import { getAllOrganizations, updateOrganization } from '../../firebase/firestore'
+import { Building2, Users, FileText, ShieldOff, CheckCircle, XCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { updateOrganization } from '../../firebase/firestore'
+import './RoleDash.css'
 
-function StatCard({ icon: Icon, label, value, color, delay = 0 }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay, duration: 0.5 }}
-            className="soft-card rounded-3xl p-5"
-        >
-            <div className={`inline-flex items-center justify-center w-11 h-11 rounded-2xl mb-3 ${color}`}>
-                <Icon className="w-5 h-5" />
-            </div>
-            <div className="text-2xl font-black text-gray-900">{value}</div>
-            <div className="text-sm text-gray-500 font-medium mt-0.5">{label}</div>
-        </motion.div>
-    )
+const kpiColors = [
+    { bg: 'var(--c-brand-light)', color: 'var(--c-brand)' },
+    { bg: 'var(--c-success-bg)', color: 'var(--c-success)' },
+    { bg: 'var(--c-accent-light)', color: 'var(--c-accent)' },
+    { bg: 'var(--c-danger-bg)', color: 'var(--c-danger)' },
+]
+
+const planStyle = {
+    free: { background: 'var(--c-divider)', color: 'var(--c-text-muted)' },
+    pro: { background: 'var(--c-brand-light)', color: 'var(--c-brand)' },
+    enterprise: { background: 'var(--c-accent-light)', color: 'var(--c-accent)' },
 }
+
+const ORG_COLORS = ['#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#06b6d4', '#0ea5e9', '#f59e0b', '#10b981']
 
 export default function SuperAdminDashboard() {
     const [orgs, setOrgs] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        getAllOrganizations().then((snap) => {
-            setOrgs(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-            setLoading(false)
-        }).catch(() => setLoading(false))
+        getAllOrganizations().then(snap => { setOrgs(snap.docs.map(d => ({ id: d.id, ...d.data() }))); setLoading(false) })
+            .catch(() => setLoading(false))
     }, [])
 
     const toggleSuspend = async (org) => {
         try {
             await updateOrganization(org.id, { suspended: !org.suspended })
-            setOrgs((prev) => prev.map((o) => o.id === org.id ? { ...o, suspended: !o.suspended } : o))
+            setOrgs(prev => prev.map(o => o.id === org.id ? { ...o, suspended: !o.suspended } : o))
             toast.success(org.suspended ? 'Organization activated' : 'Organization suspended')
-        } catch {
-            toast.error('Failed to update organization')
-        }
+        } catch { toast.error('Failed to update organization') }
     }
 
-    const planBadge = (plan) => ({
-        free: 'bg-gray-100 text-gray-600',
-        pro: 'bg-brand-100 text-brand-700',
-        enterprise: 'bg-accent-100 text-accent-700',
-    })[plan] || 'bg-gray-100 text-gray-600'
+    const stats = [
+        { icon: Building2, label: 'Total Orgs', value: orgs.length },
+        { icon: Users, label: 'Active Orgs', value: orgs.filter(o => !o.suspended).length },
+        { icon: FileText, label: 'Pro / Enterprise', value: orgs.filter(o => o.plan !== 'free').length },
+        { icon: ShieldOff, label: 'Suspended', value: orgs.filter(o => o.suspended).length },
+    ]
 
     return (
         <DashboardLayout>
-            <div className="mb-8">
-                <h1 className="text-2xl font-black text-gray-900">Platform Overview</h1>
-                <p className="text-gray-500 text-sm mt-1">Global analytics across all organizations</p>
-            </div>
-
-            {/* KPI cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <StatCard icon={Building2} label="Total Orgs" value={orgs.length} color="bg-brand-100 text-brand-600" delay={0} />
-                <StatCard icon={Users} label="Active Orgs" value={orgs.filter(o => !o.suspended).length} color="bg-green-100 text-green-600" delay={0.1} />
-                <StatCard icon={FileText} label="Pro / Enterprise" value={orgs.filter(o => o.plan !== 'free').length} color="bg-accent-100 text-accent-600" delay={0.2} />
-                <StatCard icon={ShieldOff} label="Suspended" value={orgs.filter(o => o.suspended).length} color="bg-red-100 text-red-500" delay={0.3} />
-            </div>
-
-            {/* Organizations table */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="soft-card rounded-3xl overflow-hidden"
-            >
-                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h2 className="font-bold text-gray-900">All Organizations</h2>
-                    <span className="text-xs text-gray-400 font-medium">{orgs.length} total</span>
+            <div className="db-page-header">
+                <div>
+                    <h1 className="db-page-title">Platform Overview</h1>
+                    <p className="db-page-sub">Global analytics across all organizations</p>
                 </div>
+                <Link to="/super-admin/orgs" className="btn btn--brand btn--sm">+ New Org</Link>
+            </div>
 
-                {loading ? (
-                    <div className="flex items-center justify-center h-40">
-                        <div className="w-6 h-6 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
-                    </div>
-                ) : orgs.length === 0 ? (
-                    <div className="text-center py-16 text-gray-400">No organizations registered yet.</div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="bg-gray-50 text-xs text-gray-500 font-semibold uppercase tracking-wide">
-                                    <th className="px-6 py-3 text-left">Organization</th>
-                                    <th className="px-6 py-3 text-left">Plan</th>
-                                    <th className="px-6 py-3 text-left">Status</th>
-                                    <th className="px-6 py-3 text-left">Registered</th>
-                                    <th className="px-6 py-3 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {orgs.map((org) => (
-                                    <tr key={org.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-xl bg-brand-gradient flex items-center justify-center text-white text-xs font-bold">
-                                                    {org.name?.[0]?.toUpperCase() || 'O'}
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold text-gray-800">{org.name}</div>
-                                                    <div className="text-xs text-gray-400">{org.slug}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full capitalize ${planBadge(org.plan)}`}>
-                                                {org.plan}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {org.suspended ? (
-                                                <span className="inline-flex items-center gap-1 text-xs font-semibold bg-red-100 text-red-600 px-2.5 py-1 rounded-full">
-                                                    <XCircle className="w-3 h-3" /> Suspended
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1 text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">
-                                                    <CheckCircle className="w-3 h-3" /> Active
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 text-xs text-gray-400">
-                                            {org.createdAt?.toDate?.()?.toLocaleDateString() || '—'}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => toggleSuspend(org)}
-                                                className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors ${org.suspended
-                                                        ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                                                        : 'bg-red-50 text-red-600 hover:bg-red-100'
-                                                    }`}
-                                            >
-                                                {org.suspended ? 'Activate' : 'Suspend'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </motion.div>
+            {/* KPIs */}
+            <div className="db-kpi-grid">
+                {stats.map((s, i) => {
+                    const Icon = s.icon; const c = kpiColors[i]
+                    return (
+                        <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="db-kpi-card">
+                            <div className="db-kpi-card__header">
+                                <div className="db-kpi-card__label">{s.label}</div>
+                                <div className="db-kpi-card__icon" style={{ background: c.bg }}><Icon style={{ color: c.color }} /></div>
+                            </div>
+                            <div className="db-kpi-card__value">{loading ? '—' : s.value}</div>
+                        </motion.div>
+                    )
+                })}
+            </div>
+
+            {/* Quick actions */}
+            <div className="role-dash__qa-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)', marginBottom: 24 }}>
+                {[
+                    { to: '/super-admin/orgs', icon: Building2, bg: 'var(--c-brand-light)', col: 'var(--c-brand)', label: 'Manage Organizations', sub: 'View, suspend, or create new orgs.' },
+                    { to: '/super-admin/users', icon: Users, bg: 'var(--c-brand-light)', col: 'var(--c-brand)', label: 'User Directory', sub: 'Search and view cross-platform users.' },
+                    { to: '/super-admin/revoke', icon: ShieldOff, bg: 'var(--c-danger-bg)', col: 'var(--c-danger)', label: 'Revoke Certificates', sub: 'Globally search and revoke credentials.' },
+                ].map(a => {
+                    const Icon = a.icon
+                    return (
+                        <Link key={a.to} to={a.to} className="role-dash__qa-card">
+                            <div className="role-dash__qa-icon" style={{ background: a.bg }}><Icon style={{ color: a.col }} /></div>
+                            <div className="role-dash__qa-title">{a.label}</div>
+                            <div className="role-dash__qa-sub">{a.sub}</div>
+                        </Link>
+                    )
+                })}
+            </div>
+
+            {/* Org cards */}
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--c-text-secondary)', marginBottom: 14 }}>All Organizations</div>
+            {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><div className="spinner" /></div>
+            ) : (
+                <div className="role-dash__org-grid">
+                    {orgs.map((org, i) => {
+                        const avatarColor = ORG_COLORS[i % ORG_COLORS.length]
+                        const ps = planStyle[org.plan] || planStyle.free
+                        return (
+                            <div key={org.id} className="role-dash__org-card">
+                                <div className="role-dash__org-header">
+                                    <div className="role-dash__org-avatar" style={{ background: avatarColor }}>{org.name?.[0] || 'O'}</div>
+                                    <div>
+                                        <div className="role-dash__org-name">{org.name}</div>
+                                        <div className="role-dash__org-plan" style={ps}>{org.plan}</div>
+                                    </div>
+                                    {org.suspended
+                                        ? <span className="badge badge--danger" style={{ marginLeft: 'auto' }}>Suspended</span>
+                                        : <span className="badge badge--success" style={{ marginLeft: 'auto' }}>Active</span>
+                                    }
+                                </div>
+                                <div className="role-dash__org-footer">
+                                    <span className="role-dash__org-stat">Limit: {org.monthlyLimit ?? '—'}/mo</span>
+                                    <div className="role-dash__org-actions">
+                                        <button onClick={() => toggleSuspend(org)} className={`role-dash__org-btn${org.suspended ? '' : ' role-dash__org-btn--danger'}`} title={org.suspended ? 'Activate' : 'Suspend'}>
+                                            {org.suspended ? <CheckCircle /> : <XCircle />}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            )}
         </DashboardLayout>
     )
 }

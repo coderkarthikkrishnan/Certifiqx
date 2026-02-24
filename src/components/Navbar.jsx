@@ -2,19 +2,22 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { signOut } from '../firebase/auth'
-import { Menu, X, ShieldCheck } from 'lucide-react'
+import { Menu, X, ShieldCheck, Moon, Sun } from 'lucide-react'
+import './Navbar.css'
 
 const navLinks = [
     { label: 'Features', href: '#features' },
-    { label: 'Dashboard', href: '#preview' },
-    { label: 'Pricing', href: '#pricing' },
+    { label: 'Preview', href: '#preview' },
+    { label: 'Contact', href: '#contact' },
 ]
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
-    const { user, role } = useAuth()
+    const { currentUser: user, role } = useAuth()
+    const { theme, toggleTheme } = useTheme()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -40,74 +43,52 @@ export default function Navbar() {
             initial={{ y: -60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                    ? 'bg-white/90 backdrop-blur-xl shadow-soft border-b border-surface-border'
-                    : 'bg-transparent'
-                }`}
+            className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}
         >
-            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div className="navbar__inner">
                 {/* Logo */}
-                <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
-                        <ShieldCheck className="w-4 h-4 text-white" />
+                <Link to="/" className="navbar__logo">
+                    <div className="navbar__logo-icon">
+                        <ShieldCheck />
                     </div>
-                    <span className="gradient-text">CertifyPro</span>
+                    <span className="gradient-text">Certifiqx</span>
                 </Link>
 
                 {/* Desktop links */}
-                <div className="hidden md:flex items-center gap-8">
+                <nav className="navbar__links">
                     {navLinks.map((l) => (
-                        <a
-                            key={l.label}
-                            href={l.href}
-                            className="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors"
-                        >
+                        <a key={l.label} href={l.href} className="navbar__link">
                             {l.label}
                         </a>
                     ))}
-                </div>
+                </nav>
 
-                {/* CTA */}
-                <div className="hidden md:flex items-center gap-3">
+                {/* Desktop Actions */}
+                <div className="navbar__actions">
+                    <button onClick={toggleTheme} className="navbar__theme-btn" aria-label="Toggle theme">
+                        {theme === 'dark' ? <Sun /> : <Moon />}
+                    </button>
+
                     {user ? (
                         <>
-                            <button
-                                onClick={() => navigate(roleHome[role] || '/dashboard')}
-                                className="text-sm font-semibold px-5 py-2 rounded-full border border-brand-200 text-brand-600 hover:bg-brand-50 transition-colors"
-                            >
+                            <button onClick={() => navigate(roleHome[role] || '/dashboard')} className="navbar__btn-signin">
                                 Dashboard
                             </button>
-                            <button
-                                onClick={handleLogout}
-                                className="text-sm font-semibold px-5 py-2 rounded-full bg-gray-900 text-white hover:bg-gray-700 transition-colors"
-                            >
+                            <button onClick={handleLogout} className="navbar__btn-cta">
                                 Logout
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link
-                                to="/login"
-                                className="text-sm font-semibold px-5 py-2 rounded-full border border-gray-200 text-gray-700 hover:border-brand-300 hover:text-brand-600 transition-colors"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="text-sm font-semibold px-5 py-2 rounded-full bg-gray-900 text-white hover:bg-brand-600 transition-colors btn-glow"
-                            >
-                                Start Free
-                            </Link>
+                            <Link to="/login" className="navbar__btn-signin">Sign In</Link>
+                            <Link to="/register" className="navbar__btn-cta">Start Free</Link>
                         </>
                     )}
                 </div>
 
                 {/* Mobile toggle */}
-                <button
-                    className="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors"
-                    onClick={() => setMobileOpen(!mobileOpen)}
-                >
-                    {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                <button className="navbar__mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
+                    {mobileOpen ? <X /> : <Menu />}
                 </button>
             </div>
 
@@ -118,31 +99,35 @@ export default function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-white/95 backdrop-blur-xl border-b border-surface-border px-6 pb-4"
+                        className="navbar__mobile"
                     >
-                        {navLinks.map((l) => (
-                            <a
-                                key={l.label}
-                                href={l.href}
-                                onClick={() => setMobileOpen(false)}
-                                className="block py-3 text-sm font-medium text-gray-700 hover:text-brand-600 border-b border-gray-100 last:border-0 transition-colors"
-                            >
-                                {l.label}
-                            </a>
-                        ))}
-                        <div className="flex gap-3 pt-3">
-                            <Link
-                                to="/login"
-                                className="flex-1 text-center text-sm font-semibold py-2.5 rounded-full border border-gray-200 text-gray-700"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="flex-1 text-center text-sm font-semibold py-2.5 rounded-full bg-gray-900 text-white"
-                            >
-                                Start Free
-                            </Link>
+                        <button onClick={toggleTheme} className="navbar__mobile-theme">
+                            {theme === 'dark' ? <><Sun /> Light Mode</> : <><Moon /> Dark Mode</>}
+                        </button>
+                        <div className="navbar__mobile-links">
+                            {navLinks.map((l) => (
+                                <a
+                                    key={l.label}
+                                    href={l.href}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="navbar__mobile-link"
+                                >
+                                    {l.label}
+                                </a>
+                            ))}
+                        </div>
+                        <div className="navbar__mobile-actions">
+                            {!user ? (
+                                <>
+                                    <Link to="/login" className="navbar__mobile-btn--outline">Sign In</Link>
+                                    <Link to="/register" className="navbar__mobile-btn--fill">Start Free</Link>
+                                </>
+                            ) : (
+                                <>
+                                    <button onClick={() => navigate(roleHome[role] || '/dashboard')} className="navbar__mobile-btn--outline">Dashboard</button>
+                                    <button onClick={handleLogout} className="navbar__mobile-btn--fill">Logout</button>
+                                </>
+                            )}
                         </div>
                     </motion.div>
                 )}

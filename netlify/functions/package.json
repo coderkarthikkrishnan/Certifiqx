@@ -1,18 +1,19 @@
 {
-  "name": "certifypro-functions",
+  "name": "certifiqx-functions",
   "version": "1.0.0",
-  "description": "CertifyPro Netlify serverless functions",
+  "description": "Certifiqx Netlify serverless functions",
   "engines": {
     "node": "18"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "axios": "^1.6.8",
+    "cloudinary": "^2.3.1",
     "firebase-admin": "^12.0.0",
+    "papaparse": "^5.4.1",
+    "pdf-lib": "^1.17.1",
     "pdfkit": "^0.14.0",
     "qrcode": "^1.5.3",
-    "cloudinary": "^2.3.1",
-    "razorpay": "^2.9.2",
-    "uuid": "^9.0.1",
-    "papaparse": "^5.4.1",
-    "axios": "^1.6.8"
+    "uuid": "^9.0.1"
   }
 }

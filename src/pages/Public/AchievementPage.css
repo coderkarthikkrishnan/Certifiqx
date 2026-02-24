@@ -1,0 +1,250 @@
+/* AchievementPage.css */
+
+.achiev-page {
+    min-height: 100vh;
+    background: var(--c-bg);
+    padding: var(--sp-12) var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.achiev-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.achiev-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--c-text-faint);
+    margin-bottom: var(--sp-10);
+    transition: color var(--t-fast);
+}
+
+.achiev-back:hover {
+    color: var(--c-brand);
+}
+
+.achiev-back svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Profile header */
+.achiev-header {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-3xl);
+    padding: var(--sp-12) var(--sp-8);
+    text-align: center;
+    margin-bottom: var(--sp-10);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.achiev-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--c-brand-light) 0%, var(--c-accent-light) 100%);
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.achiev-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.achiev-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--sp-4);
+    background: linear-gradient(135deg, var(--c-brand) 0%, var(--c-accent) 100%);
+    border-radius: var(--r-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 800;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+}
+
+.achiev-name {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--c-text-primary);
+    margin-bottom: var(--sp-2);
+    letter-spacing: -0.02em;
+}
+
+.achiev-meta {
+    font-size: 14px;
+    color: var(--c-text-muted);
+    margin-bottom: var(--sp-4);
+}
+
+.achiev-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: var(--c-card);
+    border: 1px solid var(--c-brand-muted);
+    border-radius: var(--r-full);
+    color: var(--c-brand);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+}
+
+.achiev-verified-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Empty state */
+.achiev-empty {
+    text-align: center;
+    padding: var(--sp-16) 0;
+    color: var(--c-text-faint);
+}
+
+.achiev-empty svg {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--sp-4);
+    opacity: 0.3;
+}
+
+/* Grid */
+.achiev-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--sp-6);
+}
+
+/* Certificate Card */
+.achiev-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-2xl);
+    overflow: hidden;
+    transition: box-shadow var(--t-base), transform var(--t-base);
+}
+
+.achiev-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+.achiev-card-top {
+    height: 6px;
+    background: linear-gradient(90deg, var(--c-brand) 0%, var(--c-accent) 100%);
+}
+
+.achiev-card-body {
+    padding: var(--sp-6);
+}
+
+.achiev-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--sp-4);
+}
+
+.achiev-org-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-xl);
+    background: var(--c-brand-light);
+    color: var(--c-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.achiev-cert-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--c-text-primary);
+    line-height: 1.2;
+    margin-bottom: var(--sp-2);
+}
+
+.achiev-cert-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--c-text-muted);
+    margin-bottom: var(--sp-2);
+}
+
+.achiev-cert-detail:last-of-type {
+    margin-bottom: var(--sp-5);
+}
+
+.achiev-cert-detail svg {
+    width: 14px;
+    height: 14px;
+}
+
+.achiev-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.achiev-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: var(--r-lg);
+    font-size: 13px;
+    font-weight: 700;
+    transition: background var(--t-fast), color var(--t-fast);
+}
+
+.achiev-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.achiev-btn-download {
+    background: var(--c-btn-dark);
+    color: var(--c-btn-dark-text);
+}
+
+.achiev-btn-download:hover {
+    background: var(--c-brand);
+}
+
+.achiev-btn-share {
+    background: #f0fdfa;
+    /* generic light shade for linkedin or similar */
+    border: 1px solid #ccfbf1;
+    color: #0d9488;
+}
+
+.achiev-btn-share:hover {
+    background: #ccfbf1;
+}
+
+@media (max-width: 640px) {
+    .achiev-grid {
+        grid-template-columns: 1fr;
+    }
+}

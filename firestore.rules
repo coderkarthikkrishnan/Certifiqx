@@ -2,68 +2,140 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Helper functions ─────────────────────────────────────────────────
-    function isAuth() {
+    // ── Helpers ───────────────────────────────────────────────────────
+    function isSignedIn() {
       return request.auth != null;
     }
 
-    function getUserData() {
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Reads the caller's own user document from Firestore.
+    // Used to validate role for write operations.
+    function myUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    function myRole() {
+      return myUserData().role;
+    }
+
+    function myDeptId() {
+      return myUserData().get('departmentId', myUserData().get('dept', null));
+    }
+
+    function myOrgId() {
+      return myUserData().orgId;
+    }
+
     function hasRole(role) {
-      return isAuth() && getUserData().role == role;
+      return isSignedIn() && myRole() == role;
     }
 
     function hasAnyRole(roles) {
-      return isAuth() && getUserData().role in roles;
+      return isSignedIn() && myRole() in roles;
     }
 
-    function sameOrg(orgId) {
-      return isAuth() && getUserData().orgId == orgId;
-    }
-
-    // ── Users ────────────────────────────────────────────────────────────
+    // ── users ─────────────────────────────────────────────────────────
+    // Users can only read their own document.
+    // Only PLATFORM_SUPER_ADMIN can create/update/delete user documents.
     match /users/{uid} {
-      allow read:  if request.auth.uid == uid || hasRole('superadmin');
-      allow create: if request.auth.uid == uid;
-      allow update: if request.auth.uid == uid || hasRole('superadmin');
-      allow delete: if hasRole('superadmin');
+      allow read:   if isOwner(uid) || 
+                       hasRole('PLATFORM_SUPER_ADMIN') ||
+                       (hasRole('PRINCIPAL') && resource.data.orgId == myOrgId()) ||
+                       // HODs can read all users in their org; dept scoping is enforced client-side.
+                       (hasRole('HOD') && resource.data.orgId == myOrgId());
+      allow create: if hasRole('PLATFORM_SUPER_ADMIN') || 
+                       (
+                         isOwner(uid) && 
+                         request.resource.data.email == request.auth.token.email &&
+                         exists(/databases/$(database)/documents/invitations/$(request.auth.token.email)) &&
+                         request.resource.data.role == get(/databases/$(database)/documents/invitations/$(request.auth.token.email)).data.role &&
+                         request.resource.data.orgId == get(/databases/$(database)/documents/invitations/$(request.auth.token.email)).data.orgId
+                       );
+      allow update: if hasRole('PLATFORM_SUPER_ADMIN') ||
+                       (hasRole('PRINCIPAL') && resource.data.orgId == myOrgId());
+      allow delete: if hasRole('PLATFORM_SUPER_ADMIN');
     }
 
-    // ── Organizations ────────────────────────────────────────────────────
+    // ── organizations ─────────────────────────────────────────────────
+    // Authenticated users in the same org can read.
+    // Only Super Admin can create/modify orgs.
     match /organizations/{orgId} {
-      // Any authenticated user can read (needed for dashboard lookups)
-      allow read:   if isAuth();
-      // Only principal of that org or superadmin can write
-      allow create: if hasAnyRole(['principal', 'superadmin']);
-      allow update: if (hasRole('principal') && sameOrg(orgId)) || hasRole('superadmin');
-      allow delete: if hasRole('superadmin');
+      allow read:   if isSignedIn() && (myOrgId() == orgId || hasRole('PLATFORM_SUPER_ADMIN'));
+      allow create: if hasRole('PLATFORM_SUPER_ADMIN');
+      allow update: if hasRole('PLATFORM_SUPER_ADMIN') ||
+                       (hasRole('PRINCIPAL') && myOrgId() == orgId);
+      allow delete: if hasRole('PLATFORM_SUPER_ADMIN');
     }
 
-    // ── Certificates ─────────────────────────────────────────────────────
+    // ── certificates ──────────────────────────────────────────────────
+    // Public read (for /verify/:id page — no login required).
+    // Writes are ONLY via Admin SDK in Netlify functions (bypasses rules).
+    // Frontend revocation is allowed for Principal, Super Admin, and HODs (their dept only).
     match /certificates/{certId} {
-      // Public read for verification pages (no auth required)
-      allow read: if true;
-      // Write only via Netlify Functions (Firebase Admin SDK bypasses rules)
-      // Frontend direct write is blocked for non-admins
-      allow create: if false; // Only via Admin SDK in Netlify functions
-      allow update: if hasAnyRole(['principal', 'superadmin']); // Revocation
-      allow delete: if hasRole('superadmin');
+      allow read:   if true; // public verification
+      allow create: if false; // Admin SDK only (Netlify function)
+      allow update: if (hasAnyRole(['PLATFORM_SUPER_ADMIN', 'PRINCIPAL']) && myOrgId() == resource.data.orgId) ||
+                       (hasRole('HOD') && myOrgId() == resource.data.orgId && myDeptId() == resource.data.departmentId) ||
+                       (isSignedIn() && (resource.data.issuedBy == request.auth.uid || resource.data.createdBy == request.auth.uid));
+      allow delete: if (hasAnyRole(['PLATFORM_SUPER_ADMIN', 'PRINCIPAL']) && myOrgId() == resource.data.orgId) ||
+                       (hasRole('HOD') && myOrgId() == resource.data.orgId && myDeptId() == resource.data.departmentId) ||
+                       (isSignedIn() && (resource.data.issuedBy == request.auth.uid || resource.data.createdBy == request.auth.uid));
     }
 
-    // ── Subscriptions ─────────────────────────────────────────────────────
-    match /subscriptions/{orgId} {
-      allow read:   if sameOrg(orgId) || hasRole('superadmin');
-      allow write:  if hasRole('superadmin'); // Only via Admin SDK (webhook) or superadmin
-    }
-
-    // ── Departments ───────────────────────────────────────────────────────
+    // ── departments ───────────────────────────────────────────────────
     match /departments/{deptId} {
-      allow read:   if isAuth();
-      allow create: if hasAnyRole(['principal', 'superadmin']);
-      allow update: if hasAnyRole(['principal', 'hod', 'superadmin']);
-      allow delete: if hasAnyRole(['principal', 'superadmin']);
+      allow read:   if isSignedIn() && myOrgId() == resource.data.orgId;
+      allow create: if hasAnyRole(['PLATFORM_SUPER_ADMIN', 'PRINCIPAL']);
+      allow update: if hasAnyRole(['PLATFORM_SUPER_ADMIN', 'PRINCIPAL', 'HOD'])
+                    && myOrgId() == resource.data.orgId;
+      allow delete: if hasAnyRole(['PLATFORM_SUPER_ADMIN', 'PRINCIPAL'])
+                    && myOrgId() == resource.data.orgId;
+    }
+
+    // ── subscriptions ─────────────────────────────────────────────────
+    // Read: same org. Write: Admin SDK only (via Netlify functions).
+    match /subscriptions/{orgId} {
+      allow read:  if isSignedIn() && myOrgId() == orgId;
+      allow write: if false; // Admin SDK only
+    }
+
+    // ── invitations ───────────────────────────────────────────────────
+    match /invitations/{email} {
+      allow read:   if hasRole('PLATFORM_SUPER_ADMIN') || 
+                       (isSignedIn() && request.auth.token.email == email) ||
+                       (hasRole('PRINCIPAL') && resource.data.orgId == myOrgId()) ||
+                       // HODs can read all org invitations; dept scoping is enforced client-side.
+                       (hasRole('HOD') && resource.data.orgId == myOrgId());
+      
+      allow create, update: if hasRole('PLATFORM_SUPER_ADMIN') ||
+                       (hasRole('PRINCIPAL') && 
+                        request.resource.data.orgId == myOrgId() &&
+                        request.resource.data.role in ['HOD', 'STAFF']) ||
+                       (hasRole('HOD') && 
+                        request.resource.data.orgId == myOrgId() &&
+                        request.resource.data.departmentId == myDeptId() &&
+                        request.resource.data.role == 'STAFF');
+      
+      allow delete: if hasRole('PLATFORM_SUPER_ADMIN') || 
+                       (isSignedIn() && request.auth.token.email == email) ||
+                       (hasRole('PRINCIPAL') && resource.data.orgId == myOrgId()) ||
+                       (hasRole('HOD') && resource.data.orgId == myOrgId() && resource.data.departmentId == myDeptId());
+    }
+
+    match /templates/{templateId} {
+      allow read: if isSignedIn() && (hasRole('PLATFORM_SUPER_ADMIN') || resource.data.orgId == myOrgId());
+      allow create: if hasRole('PLATFORM_SUPER_ADMIN') ||
+                     (hasRole('PRINCIPAL') && request.resource.data.orgId == myOrgId()) ||
+                     (hasRole('HOD') && request.resource.data.orgId == myOrgId() && request.resource.data.departmentId == myDeptId());
+      allow update: if hasRole('PLATFORM_SUPER_ADMIN') ||
+                     (hasRole('PRINCIPAL') && resource.data.orgId == myOrgId()) ||
+                     (hasRole('HOD') && resource.data.orgId == myOrgId() && resource.data.departmentId == myDeptId());
+      allow delete: if hasRole('PLATFORM_SUPER_ADMIN') ||
+                     (hasRole('PRINCIPAL') && resource.data.orgId == myOrgId()) ||
+                     (hasRole('HOD') && resource.data.orgId == myOrgId() && resource.data.departmentId == myDeptId());
     }
   }
 }

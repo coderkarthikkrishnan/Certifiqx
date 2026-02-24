@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
@@ -11,33 +12,36 @@ export default {
             },
             colors: {
                 brand: {
-                    50: '#f0f4ff',
-                    100: '#e0eaff',
-                    200: '#c7d7fe',
-                    300: '#a5b8fd',
-                    400: '#818ef9',
-                    500: '#6366f1',
-                    600: '#4f46e5',
-                    700: '#4338ca',
-                    800: '#3730a3',
-                    900: '#312e81',
+                    50: '#eff6ff',
+                    100: '#dbeafe',
+                    200: '#bfdbfe',
+                    300: '#93c5fd',
+                    400: '#60a5fa',
+                    500: '#3b82f6', // New primary
+                    600: '#2563eb', // Light mode primary
+                    700: '#1d4ed8',
+                    800: '#1e40af',
+                    900: '#1e3a8a',
                 },
                 accent: {
-                    50: '#fdf4ff',
-                    100: '#fae8ff',
-                    200: '#f5d0fe',
-                    300: '#f0abfc',
-                    400: '#e879f9',
-                    500: '#d946ef',
-                    600: '#c026d3',
-                    700: '#a21caf',
-                    800: '#86198f',
-                    900: '#701a75',
+                    50: '#f5f3ff',
+                    100: '#ede9fe',
+                    200: '#ddd6fe',
+                    300: '#c4b5fd',
+                    400: '#a78bfa',
+                    500: '#8b5cf6', // New secondary
+                    600: '#7c3aed', // Light mode secondary
+                    700: '#6d28d9',
+                    800: '#5b21b6',
+                    900: '#4c1d95',
                 },
                 surface: {
-                    DEFAULT: '#f8f9fb',
-                    card: '#ffffff',
+                    DEFAULT: '#f8f9fb', // Light bg
+                    card: '#ffffff', // Light card
                     border: '#e8eaf0',
+                    dark: '#0f172a', // Dark bg
+                    darkCard: '#1e293b', // Dark card
+                    darkBorder: '#334155' // Dark border
                 },
             },
             borderRadius: {

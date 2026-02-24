@@ -1,0 +1,168 @@
+/* HODDashboard.css */
+
+.hod-dash__qa-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.hod-dash__qa-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-2xl);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    text-decoration: none;
+    transition: transform var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast);
+}
+
+.hod-dash__qa-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--c-brand-muted);
+}
+
+.hod-dash__qa-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    transition: transform var(--t-fast), background var(--t-fast);
+}
+
+.hod-dash__qa-card:hover .hod-dash__qa-icon {
+    transform: scale(1.1);
+}
+
+.hod-dash__qa-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.hod-dash__qa-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c-text-primary);
+    margin-bottom: 4px;
+}
+
+.hod-dash__qa-sub {
+    font-size: 12px;
+    color: var(--c-text-muted);
+    line-height: 1.5;
+}
+
+/* Staff contribution card */
+.hod-dash__staff-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-2xl);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 20px;
+}
+
+.hod-dash__staff-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-text-secondary);
+    margin-bottom: 20px;
+}
+
+.hod-dash__bar-row {
+    margin-bottom: 16px;
+}
+
+.hod-dash__bar-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.hod-dash__bar-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+}
+
+.hod-dash__bar-count {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-text-faint);
+}
+
+.hod-dash__bar-track {
+    width: 100%;
+    height: 10px;
+    background: var(--c-bg);
+    border-radius: var(--r-full);
+    overflow: hidden;
+}
+
+.hod-dash__bar-fill {
+    height: 100%;
+    border-radius: var(--r-full);
+    background: linear-gradient(90deg, var(--c-brand), var(--c-accent));
+}
+
+/* Recent certs */
+.hod-dash__recent-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-2xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.hod-dash__recent-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--c-border);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-text-secondary);
+}
+
+.hod-dash__cert-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--c-divider);
+    transition: background var(--t-fast);
+}
+
+.hod-dash__cert-row:last-child {
+    border-bottom: none;
+}
+
+.hod-dash__cert-row:hover {
+    background: var(--c-bg);
+}
+
+.hod-dash__cert-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+}
+
+.hod-dash__cert-email {
+    font-size: 11px;
+    color: var(--c-text-faint);
+}
+
+@media (max-width: 640px) {
+    .hod-dash__qa-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,28 +1,58 @@
-import { Navigate } from 'react-router-dom'
+// src/components/ProtectedRoute.jsx
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
-const ROLE_HOME = {
-    superadmin: '/dashboard/super',
-    principal: '/dashboard/principal',
-    hod: '/dashboard/hod',
-    staff: '/dashboard/staff',
-}
-
 /**
- * Wraps a route so only logged-in users with the correct roles can access it.
- * @param {string[]} roles - allowed roles. Empty = any authenticated user.
+ * ProtectedRoute: blocks unauthenticated users.
+ * Redirects to /login with the attempted path saved in state.
  */
-export default function ProtectedRoute({ children, roles = [] }) {
-    const { user, role, loading } = useAuth()
+export function ProtectedRoute({ children }) {
+    const { isAuthenticated, loading } = useAuth()
+    const location = useLocation()
 
-    if (loading) return null
+    if (loading) return <LoadingScreen />
 
-    if (!user) return <Navigate to="/login" replace />
-
-    if (roles.length > 0 && !roles.includes(role)) {
-        const home = ROLE_HOME[role] || '/login'
-        return <Navigate to={home} replace />
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />
     }
 
     return children
+}
+
+/**
+ * RoleBasedRoute: blocks authenticated users who don't have one of the
+ * allowed roles. Redirects to /unauthorized.
+ *
+ * Usage:
+ *   <RoleBasedRoute roles={['PLATFORM_SUPER_ADMIN']}>
+ *     <SuperAdminDashboard />
+ *   </RoleBasedRoute>
+ */
+export function RoleBasedRoute({ roles, children }) {
+    const { isAuthenticated, role, loading } = useAuth()
+    const location = useLocation()
+
+    if (loading) return <LoadingScreen />
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />
+    }
+
+    if (!roles.includes(role)) {
+        return <Navigate to="/unauthorized" replace />
+    }
+
+    return children
+}
+
+// ── Tiny inline loading screen ─────────────────────────────────────────────
+function LoadingScreen() {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-[#f0f4ff]">
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-10 h-10 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+                <p className="text-sm text-gray-400 font-medium">Loading…</p>
+            </div>
+        </div>
+    )
 }

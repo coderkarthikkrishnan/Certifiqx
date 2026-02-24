@@ -1,229 +1,320 @@
-import { motion } from 'framer-motion'
+import { useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Play, Shield, Zap, Globe } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import './HeroSection.css'
 
-/* ── Floating blob ────────────────────────────────────────────────────── */
+gsap.registerPlugin(useGSAP, ScrollTrigger)
+
 function Blob({ className, delay = 0 }) {
-    return (
-        <motion.div
-            className={`absolute rounded-full blur-3xl opacity-30 pointer-events-none ${className}`}
-            animate={{ y: [0, -20, 0], scale: [1, 1.06, 1] }}
-            transition={{ duration: 8, repeat: Infinity, delay, ease: 'easeInOut' }}
-        />
-    )
+    const blobRef = useRef()
+
+    useGSAP(() => {
+        gsap.to(blobRef.current, {
+            y: -20,
+            scale: 1.06,
+            duration: 4,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: delay
+        })
+    })
+
+    return <div ref={blobRef} className={`hero__blob ${className}`} />
 }
 
-/* ── Floating dashboard mockup card ──────────────────────────────────── */
 function DashboardMockup() {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="relative w-full max-w-lg mx-auto"
-        >
-            {/* Outer glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-400/20 to-accent-400/20 rounded-3xl blur-2xl" />
+    const bars = [40, 65, 50, 80, 60, 90, 75, 85, 70, 95, 60, 100]
+    const mockupRef = useRef()
+    const floatTopRef = useRef()
+    const floatBotRef = useRef()
 
-            {/* Main card */}
-            <div className="relative glass-card rounded-3xl p-5 shadow-card">
+    // The entrance animation is handled by the main timeline in HeroSection
+
+    useGSAP(() => {
+        // Subtle infinite glass float
+        gsap.to(mockupRef.current, {
+            y: -5,
+            duration: 3,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        })
+
+        // Badge floats
+        gsap.to(floatTopRef.current, {
+            y: -8,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        })
+
+        gsap.to(floatBotRef.current, {
+            y: 8,
+            duration: 2.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: 1
+        })
+    })
+
+    return (
+        <div ref={mockupRef} className="hero__mockup hero-elem" style={{ opacity: 0, transform: 'translateY(40px)' }}>
+            <div className="hero__mock-card">
                 {/* Top bar */}
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                <div className="hero__mock-topbar">
+                    <div className="hero__mock-dots">
+                        <div className="hero__mock-dot hero__mock-dot--red" />
+                        <div className="hero__mock-dot hero__mock-dot--yellow" />
+                        <div className="hero__mock-dot hero__mock-dot--green" />
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-20 h-2 rounded-full bg-gray-200" />
-                        <div className="w-8 h-2 rounded-full bg-brand-200" />
+                    <div className="hero__mock-urlbar">
+                        <div className="hero__mock-urlbar-pill hero__mock-urlbar-pill--long" />
+                        <div className="hero__mock-urlbar-pill hero__mock-urlbar-pill--short" />
                     </div>
                 </div>
 
                 {/* Stat row */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="hero__mock-stats">
                     {[
-                        { label: 'Certificates', value: '2,847', color: 'bg-brand-100 text-brand-700' },
-                        { label: 'This Month', value: '342', color: 'bg-green-100 text-green-700' },
-                        { label: 'Departments', value: '12', color: 'bg-accent-100 text-accent-700' },
+                        { label: 'Certificates', value: '2,847', cls: 'hero__mock-stat-label--brand' },
+                        { label: 'This Month', value: '342', cls: 'hero__mock-stat-label--green' },
+                        { label: 'Departments', value: '12', cls: 'hero__mock-stat-label--accent' },
                     ].map((s) => (
-                        <div key={s.label} className="soft-card rounded-2xl p-3">
-                            <div className={`text-xs font-medium px-2 py-0.5 rounded-full w-fit mb-1 ${s.color}`}>{s.label}</div>
-                            <div className="text-xl font-bold text-gray-900">{s.value}</div>
+                        <div key={s.label} className="hero__mock-stat">
+                            <div className={`hero__mock-stat-label ${s.cls}`}>{s.label}</div>
+                            <div className="hero__mock-stat-value">{s.value}</div>
                         </div>
                     ))}
                 </div>
 
-                {/* Chart bar mockup */}
-                <div className="soft-card rounded-2xl p-3 mb-3">
-                    <div className="text-xs font-semibold text-gray-500 mb-2">Monthly Generation</div>
-                    <div className="flex items-end gap-1.5 h-14">
-                        {[40, 65, 50, 80, 60, 90, 75, 85, 70, 95, 60, 100].map((h, i) => (
+                {/* Chart */}
+                <div className="hero__mock-chart">
+                    <div className="hero__mock-chart-label">Monthly Generation</div>
+                    <div className="hero__mock-bars">
+                        {bars.map((h, i) => (
                             <div
                                 key={i}
-                                className="flex-1 rounded-t-md"
-                                style={{
-                                    height: `${h}%`,
-                                    background: i === 11
-                                        ? 'linear-gradient(to top, #6366f1, #d946ef)'
-                                        : 'rgba(99,102,241,0.15)',
-                                }}
+                                className={`hero__mock-bar${i === bars.length - 1 ? ' hero__mock-bar--active' : ''}`}
+                                style={{ height: `${h}%` }}
                             />
                         ))}
                     </div>
                 </div>
 
-                {/* Recent certs list */}
-                <div className="space-y-2">
+                {/* Recent rows */}
+                <div className="hero__mock-rows">
                     {[
-                        { name: 'Arjun Sharma', dept: 'Computer Science', badge: 'Valid' },
-                        { name: 'Priya Nair', dept: 'Electronics', badge: 'Valid' },
+                        { name: 'Arjun Sharma', dept: 'Computer Science' },
+                        { name: 'Priya Nair', dept: 'Electronics' },
                     ].map((c) => (
-                        <div key={c.name} className="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50">
+                        <div key={c.name} className="hero__mock-row">
                             <div>
-                                <div className="text-xs font-semibold text-gray-800">{c.name}</div>
-                                <div className="text-[10px] text-gray-400">{c.dept}</div>
+                                <div className="hero__mock-row-name">{c.name}</div>
+                                <div className="hero__mock-row-dept">{c.dept}</div>
                             </div>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">{c.badge}</span>
+                            <span className="hero__mock-badge">Valid</span>
                         </div>
                     ))}
                 </div>
+
+                {/* Floating badges */}
+                <div ref={floatTopRef} className="hero__float-badge hero__float-badge--top">
+                    <div className="hero__float-icon hero__float-icon--green"><Shield /></div>
+                    <div>
+                        <div className="hero__float-caption">QR Verified</div>
+                        <div className="hero__float-value hero__float-value--green">Authentic</div>
+                    </div>
+                </div>
+
+                <div ref={floatBotRef} className="hero__float-badge hero__float-badge--bot">
+                    <div className="hero__float-icon hero__float-icon--blue"><Zap /></div>
+                    <div>
+                        <div className="hero__float-caption">Bulk Generated</div>
+                        <div className="hero__float-value hero__float-value--blue">342 in 4s</div>
+                    </div>
+                </div>
             </div>
-
-            {/* Floating badges */}
-            <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-4 -right-4 glass-card rounded-2xl px-3 py-2 shadow-card flex items-center gap-2"
-            >
-                <div className="w-6 h-6 rounded-lg bg-green-100 flex items-center justify-center">
-                    <Shield className="w-3 h-3 text-green-600" />
-                </div>
-                <div>
-                    <div className="text-[9px] font-medium text-gray-500">QR Verified</div>
-                    <div className="text-xs font-bold text-green-600">Authentic</div>
-                </div>
-            </motion.div>
-
-            <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute -bottom-4 -left-4 glass-card rounded-2xl px-3 py-2 shadow-card flex items-center gap-2"
-            >
-                <div className="w-6 h-6 rounded-lg bg-brand-100 flex items-center justify-center">
-                    <Zap className="w-3 h-3 text-brand-600" />
-                </div>
-                <div>
-                    <div className="text-[9px] font-medium text-gray-500">Bulk Generated</div>
-                    <div className="text-xs font-bold text-brand-600">342 in 4s</div>
-                </div>
-            </motion.div>
-        </motion.div>
+        </div>
     )
 }
 
-/* ── Hero ─────────────────────────────────────────────────────────────── */
+// Helper to wrap characters for GSAP stagger
+const SplitText = ({ children }) => {
+    if (typeof children !== 'string') return children
+
+    // Split by words first to keep them together, then characters
+    return children.split(' ').map((word, wordIndex) => (
+        <span key={wordIndex} style={{ display: 'inline-block', whiteSpace: 'pre', color: 'inherit' }}>
+            {word.split('').map((char, charIndex) => (
+                <span key={charIndex} className="hero-char" style={{ display: 'inline-block', opacity: 0, transform: 'translateY(15px)', filter: 'blur(4px)', color: 'inherit' }}>
+                    {char}
+                </span>
+            ))}
+            {' '}
+        </span>
+    ))
+}
+
 export default function HeroSection() {
+    const { currentUser, role } = useAuth()
+    const sectionRef = useRef()
+    const btnRef = useRef()
+
+    const roleHome = {
+        superadmin: '/dashboard/super',
+        principal: '/dashboard/principal',
+        hod: '/dashboard/hod',
+        staff: '/dashboard/staff',
+    }
+    const dashboardUrl = roleHome[role] || '/dashboard'
+
+    useGSAP(() => {
+        // --- 1. Page Load Timeline ---
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+        // Stagger characters in title
+        tl.to('.hero-char', {
+            y: 0,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.8,
+            stagger: 0.02,
+            delay: 0.1
+        }, 0)
+
+        // Other elements
+        tl.fromTo('.hero-elem',
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 },
+            0.2
+        )
+
+        // Button scale
+        tl.fromTo('.hero__cta-primary',
+            { scale: 0.95 },
+            { scale: 1, duration: 0.8, ease: "back.out(1.5)" },
+            0.4
+        )
+
+        // --- 2. Background Parallax ---
+        gsap.to('.hero__bg-img', {
+            yPercent: 15,
+            ease: "none",
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        })
+
+    }, { scope: sectionRef })
+
+    // Magnetic Button Effect
+    useEffect(() => {
+        const btn = btnRef.current
+        if (!btn) return
+
+        const handleMouseMove = (e) => {
+            const rect = btn.getBoundingClientRect()
+            const h = rect.width / 2
+            const w = rect.height / 2
+            const x = e.clientX - rect.left - h
+            const y = e.clientY - rect.top - w
+
+            // Subtle 15px max movement
+            gsap.to(btn, {
+                x: x * 0.15,
+                y: y * 0.15,
+                duration: 0.4,
+                ease: "power2.out",
+                scale: 1.05,
+                boxShadow: '0 12px 24px rgba(37, 99, 235, 0.25)'
+            })
+        }
+
+        const handleMouseLeave = () => {
+            gsap.to(btn, {
+                x: 0,
+                y: 0,
+                duration: 0.7,
+                ease: "elastic.out(1, 0.3)",
+                scale: 1,
+                boxShadow: 'none'
+            })
+        }
+
+        btn.addEventListener('mousemove', handleMouseMove)
+        btn.addEventListener('mouseleave', handleMouseLeave)
+
+        return () => {
+            btn.removeEventListener('mousemove', handleMouseMove)
+            btn.removeEventListener('mouseleave', handleMouseLeave)
+        }
+    }, [])
+
     return (
-        <section className="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden bg-hero-gradient">
-            {/* Background blobs */}
-            <Blob className="w-[500px] h-[500px] bg-brand-400 -top-40 -left-40" delay={0} />
-            <Blob className="w-[400px] h-[400px] bg-accent-400 top-20 right-0" delay={2} />
-            <Blob className="w-[300px] h-[300px] bg-brand-300 bottom-0 left-1/3" delay={4} />
+        <section ref={sectionRef} className="hero">
+            <div className="hero__bg-img" />
+            <Blob className="hero__blob--1" delay={0} />
+            <Blob className="hero__blob--2" delay={2} />
 
-            {/* Grid pattern overlay */}
-            <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                    backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)',
-                    backgroundSize: '32px 32px',
-                }}
-            />
+            <div className="hero__container">
+                {/* Text */}
+                <div className="hero__text">
+                    <div className="hero__badge hero-elem" style={{ opacity: 0 }}>
+                        <Globe />
+                        Multi-Organization Platform
+                    </div>
 
-            <div className="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
-                {/* Left: Text */}
-                <div>
-                    {/* Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-semibold mb-6"
-                    >
-                        <Globe className="w-4 h-4" />
-                        Multi-Organization Certificate Platform
-                    </motion.div>
+                    <h1 className="hero__heading">
+                        <SplitText>Secure Digital </SplitText>
+                        <span style={{ color: 'var(--c-brand)' }}><SplitText>Certificates</SplitText></span>{' '}
+                        <SplitText>with Instant </SplitText>
+                        <span style={{ color: 'var(--c-brand)' }}><SplitText>Verification</SplitText></span>
+                    </h1>
 
-                    {/* Headline */}
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-5xl lg:text-6xl font-black text-gray-900 leading-[1.08] mb-6"
-                    >
-                        Secure Digital{' '}
-                        <span className="gradient-pill gradient-text">Certificates</span>{' '}
-                        with Instant{' '}
-                        <span className="gradient-text">Verification</span>
-                    </motion.h1>
+                    <p className="hero__sub hero-elem" style={{ opacity: 0 }}>
+                        Generate certificates in bulk, embed cryptographic QR codes,
+                        and manage your entire organization from a premium dashboard.
+                    </p>
 
-                    {/* Subheading */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-lg text-gray-500 leading-relaxed mb-10 max-w-lg"
-                    >
-                        Generate bulk certificates from CSV, embed QR codes for instant verification,
-                        and manage your entire organization's credentialing — all in one premium platform.
-                    </motion.p>
+                    <div className="hero__ctas hero-elem" style={{ opacity: 0 }}>
+                        {currentUser ? (
+                            <Link ref={btnRef} to={dashboardUrl} className="hero__cta-primary magnetic-wrap">
+                                Go to Dashboard
+                                <ArrowRight />
+                            </Link>
+                        ) : (
+                            <Link ref={btnRef} to="/register" className="hero__cta-primary magnetic-wrap">
+                                Start Free
+                                <ArrowRight />
+                            </Link>
+                        )}
+                    </div>
 
-                    {/* CTAs */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="flex flex-wrap gap-4"
-                    >
-                        <Link
-                            to="/register"
-                            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gray-900 text-white text-sm font-bold hover:bg-brand-600 transition-all btn-glow shadow-lg group"
-                        >
-                            Start Free
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                        <button className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border-2 border-gray-200 text-gray-700 text-sm font-bold hover:border-brand-300 hover:text-brand-600 transition-all group">
-                            <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center group-hover:bg-brand-200 transition-colors">
-                                <Play className="w-3 h-3 text-brand-600 ml-0.5" />
-                            </div>
-                            Book Demo
-                        </button>
-                    </motion.div>
-
-                    {/* Trust badges */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="flex items-center gap-6 mt-10"
-                    >
+                    <div className="hero__stats hero-elem" style={{ opacity: 0 }}>
                         {[
                             { value: '50K+', label: 'Certificates' },
                             { value: '200+', label: 'Organizations' },
                             { value: '99.9%', label: 'Uptime' },
                         ].map((s) => (
-                            <div key={s.label} className="text-center">
-                                <div className="text-xl font-black gradient-text">{s.value}</div>
-                                <div className="text-xs text-gray-400 font-medium">{s.label}</div>
+                            <div key={s.label}>
+                                <div className="hero__stat-value">{s.value}</div>
+                                <div className="hero__stat-label">{s.label}</div>
                             </div>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
 
-                {/* Right: Mockup */}
-                <div className="hidden lg:block">
-                    <DashboardMockup />
-                </div>
+                <DashboardMockup />
             </div>
         </section>
     )
