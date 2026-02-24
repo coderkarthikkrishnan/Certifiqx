@@ -10,7 +10,10 @@ function initFirebase() {
             const endKey = '-----END PRIVATE KEY-----';
             if (privateKey.includes(beginKey) && privateKey.includes(endKey)) {
                 let keyBody = privateKey.replace(beginKey, '').replace(endKey, '').replace(/\s+/g, '');
-                privateKey = `${beginKey}\n${keyBody}\n${endKey}`;
+                const matchedBody = keyBody.match(/.{1,64}/g);
+                if (matchedBody) {
+                    privateKey = `${beginKey}\n${matchedBody.join('\n')}\n${endKey}\n`;
+                }
             }
         }
 
