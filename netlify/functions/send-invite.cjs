@@ -30,58 +30,102 @@ async function sendInviteEmail({ email, orgName, inviterName, role, appUrl }) {
         subject: `You have been invited to join ${orgName} on Certifiqx`,
         htmlContent: `
             <!DOCTYPE html>
-            <html>
-            <body style="margin: 0; padding: 0; background-color: #F3F4F6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F3F4F6; padding: 40px 20px;">
+            <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <title>You're Invited to ${orgName}</title>
+                <style type="text/css">
+                    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+                    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                    body { margin: 0; padding: 0; background-color: #f1f3f7; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
+                    @media screen and (max-width: 600px) {
+                        .email-card { width: 100% !important; border-radius: 0 !important; }
+                        .hero-cell { padding: 40px 20px !important; }
+                        .hero-title { font-size: 28px !important; }
+                        .body-cell { padding: 35px 20px 30px 20px !important; }
+                        .cta-btn { padding: 14px 20px !important; }
+                    }
+                </style>
+            </head>
+            <body style="margin:0;padding:0;background-color:#f1f3f7;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                        <td align="center">
-                            <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; max-width: 600px; width: 100%;">
-                                <!-- Header -->
+                        <td align="center" style="padding:40px 20px;">
+
+                            <!-- Card -->
+                            <table class="email-card" role="presentation" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;">
+
+                                <!-- ── HERO ── -->
                                 <tr>
-                                    <td align="center" style="background-color: #4F46E5; padding: 40px 20px;">
-                                        <h1 style="color: #FFFFFF; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Invitation to Certifiqx</h1>
-                                        <p style="color: #E0E7FF; margin: 10px 0 0 0; font-size: 16px;">${orgName}</p>
+                                    <td class="hero-cell" align="center" style="background:linear-gradient(135deg,#3b5bdb,#4263eb);background-color:#3b5bdb;padding:60px 40px;border-radius:16px 16px 0 0;">
+                                        <h1 class="hero-title" style="margin:0;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:42px;font-weight:700;color:#ffffff;letter-spacing:-1px;">.hello there</h1>
+                                        <p style="margin:12px 0 0 0;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:16px;color:rgba(255,255,255,0.85);line-height:1.5;">
+                                            You've been invited to join <strong style="color:#ffffff;">${orgName}</strong> on Certifiqx.
+                                        </p>
                                     </td>
                                 </tr>
-                                
-                                <!-- Body -->
+
+                                <!-- ── BODY ── -->
                                 <tr>
-                                    <td align="center" style="padding: 40px 40px 30px 40px;">
-                                        <h2 style="color: #111827; margin: 0 0 15px 0; font-size: 24px; font-weight: 700;">Hello there!</h2>
-                                        <p style="color: #4B5563; margin: 0 0 10px 0; font-size: 16px; line-height: 1.6; text-align: center;">
-                                            You have been invited by <strong>${inviterName}</strong> to join their organization as a <strong>${role}</strong>.
-                                        </p>
-                                        <p style="color: #4B5563; margin: 0 0 25px 0; font-size: 15px; line-height: 1.6; text-align: center;">
-                                            By accepting this invitation, you will be able to manage and issue certificates securely within the organization.
-                                        </p>
-                                        
-                                        <!-- Call to Action -->
-                                        <table border="0" cellspacing="0" cellpadding="0">
+                                    <td class="body-cell" style="padding:50px 40px 40px 40px;background-color:#ffffff;">
+
+                                        <!-- Section title -->
+                                        <h2 style="margin:0 0 20px 0;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:22px;font-weight:600;color:#212529;text-align:center;">You've got an invitation!</h2>
+
+                                        <!-- Info block -->
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                             <tr>
-                                                <td align="center" style="background-color: #4F46E5; border-radius: 8px;">
-                                                    <a href="${appUrl}/login" target="_blank" style="font-size: 16px; font-weight: bold; color: #FFFFFF; text-decoration: none; padding: 16px 32px; display: inline-block; border-radius: 8px;">Accept Invitation & Login</a>
+                                                <td valign="top" style="width:20px;color:#4263eb;font-size:20px;line-height:1.5;padding-bottom:14px;">&bull;</td>
+                                                <td style="font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:15px;color:#495057;line-height:1.6;padding-bottom:14px;">
+                                                    <strong style="color:#212529;">${inviterName}</strong> has invited you to join as a <strong style="color:#212529;">${role}</strong>.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" style="width:20px;color:#4263eb;font-size:20px;line-height:1.5;padding-bottom:14px;">&bull;</td>
+                                                <td style="font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:15px;color:#495057;line-height:1.6;padding-bottom:14px;">
+                                                    Once you accept, you'll be able to manage and issue certificates securely within <strong style="color:#212529;">${orgName}</strong>.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" style="width:20px;color:#4263eb;font-size:20px;line-height:1.5;">&bull;</td>
+                                                <td style="font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:15px;color:#495057;line-height:1.6;">
+                                                    If you don't have an account yet, you'll be prompted to create one using this email address.
                                                 </td>
                                             </tr>
                                         </table>
+
+                                        <!-- Divider -->
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr><td style="padding:30px 0;"><div style="height:1px;background-color:#e9ecef;"></div></td></tr>
+                                        </table>
+
+                                        <p style="text-align:center;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:15px;color:#495057;margin:0 0 25px 0;">Ready to get started? Click below to accept your invitation.</p>
+
+                                        <!-- CTA Button -->
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td align="center">
+                                                    <a class="cta-btn" href="${appUrl}/login" target="_blank"
+                                                        style="display:block;background:linear-gradient(135deg,#3b5bdb,#4263eb);background-color:#4263eb;color:#ffffff;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:16px;font-weight:600;text-decoration:none;padding:16px;border-radius:8px;text-align:center;">
+                                                        Accept Invitation &amp; Login
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <!-- Footer note -->
+                                        <p style="text-align:center;font-family:'Inter','Segoe UI',Arial,sans-serif;font-size:12px;color:#adb5bd;margin:30px 0 0 0;text-transform:uppercase;letter-spacing:1px;">
+                                            Powered by Certifiqx
+                                        </p>
+
                                     </td>
                                 </tr>
-                                
-                                <!-- Divider -->
-                                <tr>
-                                    <td align="center" style="padding: 0 40px;">
-                                        <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 0;">
-                                    </td>
-                                </tr>
-                                
-                                <!-- Footer info -->
-                                <tr>
-                                    <td align="center" style="padding: 30px 40px 40px 40px;">
-                                        <p style="color: #6B7280; margin: 0 0 20px 0; font-size: 14px;">If you do not have an account, you will be prompted to create one with this exact email address.</p>
-                                        
-                                        <p style="color: #D1D5DB; margin: 0; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Powered by Certifiqx</p>
-                                    </td>
-                                </tr>
+
                             </table>
+                            <!-- /Card -->
+
                         </td>
                     </tr>
                 </table>
