@@ -36,6 +36,12 @@ const styles = `
 .gen-preview__row { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-top: 1px solid var(--c-divider); font-size: 13px; }
 .gen-preview__name  { font-weight: 600; color: var(--c-text-secondary); }
 .gen-preview__email { color: var(--c-text-muted); }
+
+@media (max-width: 768px) {
+  .gen-layout { flex-direction: column; gap: 16px; }
+  .gen-sidebar { width: 100%; position: static; padding: 20px; }
+  .gen-card { padding: 20px; }
+}
 `
 
 export default function StaffGenerate() {
